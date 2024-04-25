@@ -95,7 +95,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
 
   const { loginUser } = initialState;
 
-  console.log(loginUser);
+  // console.log(loginUser);
   if (!loginUser) {
     console.log('未登录');
     return loading;
