@@ -3,84 +3,98 @@ declare namespace API {
     code?: number;
     data?: boolean;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponseInt_ = {
     code?: number;
     data?: number;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponseInterfaceInfoVO_ = {
     code?: number;
     data?: InterfaceInfoVO;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponseLoginUserVO_ = {
     code?: number;
     data?: LoginUserVO;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponseLong_ = {
     code?: number;
     data?: number;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponsePageInterfaceInfo_ = {
     code?: number;
     data?: PageInterfaceInfo_;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponsePagePost_ = {
     code?: number;
     data?: PagePost_;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponsePagePostVO_ = {
     code?: number;
     data?: PagePostVO_;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponsePageUser_ = {
     code?: number;
     data?: PageUser_;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponsePageUserVO_ = {
     code?: number;
     data?: PageUserVO_;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponsePostVO_ = {
     code?: number;
     data?: PostVO;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponseString_ = {
     code?: number;
     data?: string;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponseUser_ = {
     code?: number;
     data?: User;
     message?: string;
+    success?: boolean;
   };
 
   type BaseResponseUserVO_ = {
     code?: number;
     data?: UserVO;
     message?: string;
+    success?: boolean;
   };
 
   type checkUsingGETParams = {
@@ -115,6 +129,10 @@ declare namespace API {
 
   type getUserVOByIdUsingGETParams = {
     /** id */
+    id?: number;
+  };
+
+  type IdRequest = {
     id?: number;
   };
 
