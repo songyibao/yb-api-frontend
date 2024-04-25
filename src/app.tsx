@@ -1,41 +1,69 @@
-import { AvatarDropdown, AvatarName, Footer, Question } from '@/components';
+import { AvatarDropdown, AvatarName } from '@/components';
+import Footer from '@/components/Footer';
 import { requestConfig } from '@/requestConfig';
 import { getLoginUserUsingGet } from '@/services/ybapi-backend/userController';
 import { LinkOutlined } from '@ant-design/icons';
-import { SettingDrawer } from '@ant-design/pro-components';
+import type { Settings as LayoutSettings } from '@ant-design/pro-components';
+import { SettingDrawer } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from '@umijs/max';
 import { Link, history } from '@umijs/max';
+import defaultSettings from '../config/defaultSettings';
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
-export async function getInitialState(): Promise<InitialState> {
-  // 当页面首次加载时，获取要全局保存的数据，比如用户登录信息
-  const state: InitialState = {
-    loginUser: undefined,
-  };
-  try {
+export async function getInitialState(): Promise<{
+  settings?: Partial<LayoutSettings>;
+  loginUser?: API.LoginUserVO;
+  loading?: boolean;
+  fetchUserInfo?: () => Promise<API.LoginUserVO | undefined>;
+}> {
+  const fetchUserInfo = async () => {
     const res = await getLoginUserUsingGet();
-    if (res.data) {
-      state.loginUser = res.data;
+    if (res.success) {
+      return res.data;
+    } else {
+      return undefined;
     }
-  } catch (error) {
-    history.push(loginPath);
-  }
-  return state;
+  };
+  // 如果不是登录页面，执行
+  // const { location } = history;
+  // if (location.pathname !== loginPath) {
+  //   const loginUser = await fetchUserInfo();
+  //   return {
+  //     fetchUserInfo,
+  //     loginUser,
+  //     settings: defaultSettings as Partial<LayoutSettings>,
+  //   };
+  // }
+
+  const loginUser = await fetchUserInfo();
+  return {
+    fetchUserInfo,
+    loginUser,
+    settings: defaultSettings as Partial<LayoutSettings>,
+  };
 }
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
-    actionsRender: () => [<Question key="doc" />],
+    // actionsRender: () => [<Question key="doc" />],
     avatarProps: {
+      alt: initialState?.loginUser?.userName,
       src: initialState?.loginUser?.userAvatar,
       title: <AvatarName />,
       render: (_, avatarChildren) => {
-        return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
+        return (
+          <AvatarDropdown
+            src={initialState?.loginUser?.userAvatar}
+            alt={initialState?.loginUser?.userName}
+          >
+            {avatarChildren}
+          </AvatarDropdown>
+        );
       },
     },
     waterMarkProps: {
@@ -78,6 +106,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         ]
       : [],
     menuHeaderRender: undefined,
+    menuFooterRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
