@@ -64,18 +64,13 @@ const TableList: React.FC = () => {
    */
   const handleUpdate = async (fields: API.InterfaceInfo) => {
     const hide = message.loading('Configuring');
-    try {
-      await updateInterfaceInfoUsingPost({
-        ...fields,
-      });
-      hide();
-      message.success('操作成功');
+    const res = await updateInterfaceInfoUsingPost({
+      ...fields,
+    });
+    hide();
+    if (res.success && res.data === true) {
+      message.success('更新成功');
       return true;
-    } catch (error) {
-      hide();
-      // @ts-ignore
-      message.error('操作失败，' + error.message);
-      return false;
     }
   };
   /**

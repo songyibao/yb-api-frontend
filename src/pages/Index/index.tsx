@@ -1,7 +1,7 @@
 import { listInterfaceInfoByPageUsingPost } from '@/services/ybapi-backend/interfaceInfoController';
 import { PageContainer } from '@ant-design/pro-components';
 import { history } from '@umijs/max';
-import { List, message } from 'antd';
+import { List } from 'antd';
 import React from 'react';
 // 主页
 const Index: React.FC = () => {
@@ -12,22 +12,17 @@ const Index: React.FC = () => {
   const defaultPageSize: number = 5;
   const loadData = async (current: number = 1, pageSize: number = defaultPageSize) => {
     setLoading(true);
-    try {
-      const res = await listInterfaceInfoByPageUsingPost({
-        current,
-        pageSize,
-      });
-      setLoading(false);
+    const res = await listInterfaceInfoByPageUsingPost({
+      current,
+      pageSize,
+    });
+    setLoading(false);
+    if (res.success) {
       setList(res?.data?.records ?? []);
       setTotal(res?.data?.total ?? 0);
-
-      return true;
-    } catch (error) {
-      setLoading(false);
-      // @ts-ignore
-      message.error('加载失败，' + error.message);
-      return false;
     }
+
+    return true;
   };
   React.useEffect(() => {
     loadData();
