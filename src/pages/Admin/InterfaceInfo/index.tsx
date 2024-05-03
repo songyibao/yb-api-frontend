@@ -31,10 +31,11 @@ const TableList: React.FC = () => {
    * @zh-CN 分布更新窗口的弹窗
    * */
   const [updateModalOpen, handleUpdateModalOpen] = useState<boolean>(false);
+  const [updateModalReadOnly, handleUpdateModalReadOnly] = useState<boolean>(false);
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
+  const [currentRow, setCurrentRow] = useState<API.InterfaceInfo>();
+  const [selectedRowsState, setSelectedRows] = useState<API.InterfaceInfo[]>([]);
   /**
    * @en-US Add node
    * @zh-CN 添加节点
@@ -44,6 +45,9 @@ const TableList: React.FC = () => {
     const hide = message.loading('正在添加');
     const res = await addInterfaceInfoUsingPost({
       ...fields,
+      requestHeader: JSON.stringify(fields.requestHeader),
+      requestParams: JSON.stringify(fields.requestParams),
+      responseHeader: JSON.stringify(fields.responseHeader),
     });
     if (res.success) {
       hide();
@@ -63,14 +67,21 @@ const TableList: React.FC = () => {
    * @param fields
    */
   const handleUpdate = async (fields: API.InterfaceInfo) => {
+    if (currentRow === undefined) return false;
     const hide = message.loading('Configuring');
     const res = await updateInterfaceInfoUsingPost({
       ...fields,
+      id: currentRow.id,
+      requestHeader: JSON.stringify(fields.requestHeader),
+      requestParams: JSON.stringify(fields.requestParams),
+      responseHeader: JSON.stringify(fields.responseHeader),
     });
     hide();
     if (res.success && res.data === true) {
       message.success('更新成功');
       return true;
+    } else {
+      return false;
     }
   };
   /**
@@ -117,18 +128,16 @@ const TableList: React.FC = () => {
 
   const handleOffline = async (record: API.InterfaceInfo) => {
     const hide = message.loading('正在下线');
-    try {
-      await offlineInterfaceInfoUsingPost({
-        id: record.id,
-      });
-      hide();
+    const res = await offlineInterfaceInfoUsingPost({
+      id: record.id,
+    });
+    hide();
+    if (res.success) {
       message.success('下线成功');
       handleModalOpen(false);
+      actionRef.current?.reload();
       return true;
-    } catch (error) {
-      hide();
-      // @ts-ignore
-      message.error('下线失败，' + error.message);
+    } else {
       return false;
     }
   };
@@ -162,12 +171,17 @@ const TableList: React.FC = () => {
     {
       title: '请求头',
       dataIndex: 'requestHeader',
-      valueType: 'textarea',
+      valueType: 'jsonCode',
+    },
+    {
+      title: '请求参数',
+      dataIndex: 'requestParams',
+      valueType: 'jsonCode',
     },
     {
       title: '响应头',
       dataIndex: 'responseHeader',
-      valueType: 'textarea',
+      valueType: 'jsonCode',
     },
     {
       title: '状态',
@@ -204,6 +218,16 @@ const TableList: React.FC = () => {
         <a
           key="config"
           onClick={() => {
+            handleUpdateModalOpen(true);
+            setCurrentRow(record);
+          }}
+        >
+          详情
+        </a>,
+        <a
+          key="config"
+          onClick={() => {
+            handleUpdateModalReadOnly(false);
             handleUpdateModalOpen(true);
             setCurrentRow(record);
           }}
@@ -325,8 +349,8 @@ const TableList: React.FC = () => {
       )}
       <UpdateModal
         onSubmit={async (value) => {
-          const success = await handleUpdate(value);
-          if (success) {
+          const res = await handleUpdate(value);
+          if (res) {
             handleUpdateModalOpen(false);
             setCurrentRow(undefined);
             if (actionRef.current) {
@@ -335,6 +359,7 @@ const TableList: React.FC = () => {
           }
         }}
         onCancel={() => {
+          handleUpdateModalReadOnly(true);
           handleUpdateModalOpen(false);
           if (!showDetail) {
             setCurrentRow(undefined);
@@ -343,6 +368,7 @@ const TableList: React.FC = () => {
         visible={updateModalOpen}
         values={currentRow || {}}
         columns={columns}
+        readonly={updateModalReadOnly}
       />
 
       <Drawer

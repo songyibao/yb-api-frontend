@@ -25,3 +25,6 @@ declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
 interface InitialState {
   loginUser?: API.UserVO;
 }
+interface Params {
+  [key: string]: any; // 给对象定义字符串索引的类型
+}

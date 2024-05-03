@@ -34,6 +34,13 @@ declare namespace API {
     success?: boolean;
   };
 
+  type BaseResponseObject_ = {
+    code?: number;
+    data?: Record<string, any>;
+    message?: string;
+    success?: boolean;
+  };
+
   type BaseResponsePageInterfaceInfo_ = {
     code?: number;
     data?: PageInterfaceInfo_;
@@ -151,6 +158,8 @@ declare namespace API {
     name?: string;
     /** 请求头 */
     requestHeader?: string;
+    /** 请求头 */
+    requestParams?: string;
     /** 响应头 */
     responseHeader?: string;
     /** 接口状态 */
@@ -172,10 +181,18 @@ declare namespace API {
     name?: string;
     /** 请求头 */
     requestHeader?: string;
+    /** 请求参数 */
+    requestParams?: string;
     /** 响应头 */
     responseHeader?: string;
     /** 接口地址 */
     url?: string;
+  };
+
+  type InterfaceInfoInvokeRequest = {
+    id?: number;
+    /** 请求参数 */
+    userRequestParams?: string;
   };
 
   type InterfaceInfoQueryRequest = {
@@ -193,6 +210,8 @@ declare namespace API {
     pageSize?: number;
     /** 请求头 */
     requestHeader?: string;
+    /** 请求头 */
+    requestParams?: string;
     /** 响应头 */
     responseHeader?: string;
     sortField?: string;
@@ -216,6 +235,8 @@ declare namespace API {
     name?: string;
     /** 请求头 */
     requestHeader?: string;
+    /** 请求头 */
+    requestParams?: string;
     /** 响应头 */
     responseHeader?: string;
     /** 接口状态 */
@@ -235,6 +256,8 @@ declare namespace API {
     name?: string;
     /** 请求头 */
     requestHeader?: string;
+    /** 请求头 */
+    requestParams?: string;
     /** 响应头 */
     responseHeader?: string;
     /** 更新时间 */

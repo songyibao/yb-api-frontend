@@ -1,14 +1,14 @@
 ﻿import type { RequestConfig } from '@umijs/max';
 import { message } from 'antd';
-
+import { history } from 'umi';
 // 错误处理方案： 错误类型
-enum ErrorShowType {
-  SILENT = 0,
-  WARN_MESSAGE = 1,
-  ERROR_MESSAGE = 2,
-  NOTIFICATION = 3,
-  REDIRECT = 9,
-}
+// enum ErrorShowType {
+//   SILENT = 0,
+//   WARN_MESSAGE = 1,
+//   ERROR_MESSAGE = 2,
+//   NOTIFICATION = 3,
+//   REDIRECT = 9,
+// }
 // 与后端约定的响应数据格式
 export interface ResponseStructure {
   success: boolean;
@@ -36,6 +36,10 @@ export const requestConfig: RequestConfig = {
         // error.name = 'YbApiError';
         // error.info = res;
         message.error(res.message);
+        if (res.code === 40100) {
+          // 未登录
+          history.push('/user/login');
+        }
       }
     },
     // 错误接收及处理
@@ -49,7 +53,7 @@ export const requestConfig: RequestConfig = {
       if (error.response) {
         // Axios 的错误
         // 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
-        message.error(`响应状态码:${error.response.status}`);
+        message.error(`${error.response.data.message}, 响应状态码:${error.response.status}`);
       } else if (error.request) {
         // 请求已经成功发起，但没有收到响应
         // \`error.request\` 在浏览器中是 XMLHttpRequest 的实例，
